@@ -58,7 +58,6 @@ void insidetag(){
 int main(int argc, char* argv[])
 {
     fileopen(argv[1]);
-    struct holderlist h ;
     insidetag(); 
     return 0;
 }

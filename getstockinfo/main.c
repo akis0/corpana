@@ -1,4 +1,4 @@
-/*有報の株主一覧の部分から情報を抽出する。今は抽出する情報の手前のタグを出力できる段階。*/
+/*有報の株主一覧の部分から情報を抽出する。今は注目するタグの内側のデータがspan等なしに直書きされてたら,具体的にはNTTDATAのものからは取得できる。*/
 #include <stdio.h>
 #include<stdlib.h>
 #include <string.h>
@@ -27,6 +27,7 @@ void clearbuf(char* b){
 void insidetag(){
     char c;
     int f = 0;
+    int f0=0;
     while ((c = fgetc(fpoint)) != EOF){
         clearbuf(buf);
         int i=0;
@@ -48,9 +49,16 @@ void insidetag(){
         }
         if(f==1){
             if( (strstr(buf,"MajorShareholders")!=NULL) ){
-                printf("%s\n\n",buf);
+                while((c=getc(fpoint))!=EOF){
+                    if(c!='<'){
+                        printf("%c",c);
+                    }else{
+                        printf("\n\n");
+                        break;
+                    }
+                }
+                
             }
-            clearbuf(buf);
         }
     }
 }

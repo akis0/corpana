@@ -52,6 +52,12 @@ void insidetag(){
                 while((c=getc(fpoint))!=EOF){
                     if(c!='<'){
                         printf("%c",c);
+                    }else if(c=='<' && m!=1){
+                        while((c=getc(fpoint))!=EOF){
+                            if(c=='>'){
+                                break;
+                            }
+                        }
                     }else{
                         printf("\n\n");
                         break;

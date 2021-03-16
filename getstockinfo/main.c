@@ -9,6 +9,8 @@ void insidetag();
 int fileopen(char *filename);
 void clearbuf(char* b);
 void insidetag();
+int  to_endofthetag(char * b);
+
 
 int main(int argc, char* argv[])
 {
@@ -38,26 +40,33 @@ void clearbuf(char* b){
     }
 }
 
+int to_endofthetag(char *b){
+    clearbuf(b);
+    int i=0;
+    char c;
+    while ((c = getc(fpoint)) != EOF){
+        if (c == '>'){
+            return 1;
+        }else{
+        b[i]=c;
+        i++;
+        }
+        if(i==BUFLEN){
+            printf("too long tag");
+            return -1;
+        }
+    }
+}
+
 void insidetag(){
     char c;
     int f = 0;
     int f0=0;
     while ((c = fgetc(fpoint)) != EOF){
-        clearbuf(buf);
         int i=0;
         int f=0;
         if (c == '<'){
-            clearbuf(buf);
-            i=0;
-            while ((c = getc(fpoint)) != EOF){
-                if (c == '>'){
-                    f=1;
-                    break;
-                }else{
-                    buf[i]=c;
-                    i++;
-                }
-            }
+            f=to_endofthetag(buf);
         }else{
             continue;
         }
@@ -69,17 +78,8 @@ void insidetag(){
                     if(c!='<'){
                         printf("%c",c);
                     }else if(c=='<'){
-                        char intag[BUFLEN];
-                        clearbuf(intag);
-                        int t=0;
-                        while((c=getc(fpoint))!=EOF){
-                            if(c=='>'){
-                                break;
-                            }else{
-                                intag[t++]=c;
-                            }
-                        }
-                        if(strstr(intag,"/ix")!=NULL){
+                        to_endofthetag(buf);
+                        if(strstr(buf,"/ix")!=NULL){
                             x=1;
                         }
                     }else{

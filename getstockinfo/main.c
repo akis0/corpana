@@ -1,11 +1,24 @@
-/*有報の株主一覧の部分から情報を抽出する。今は注目するタグの内側のデータがspan等なしに直書きされてたら,具体的にはNTTDATAのものからは取得できる。*/
 #include <stdio.h>
 #include<stdlib.h>
 #include <string.h>
 #define BUFLEN 1024
 FILE *fpoint;
-char buf[BUFLEN];
+char buf[1024];
 char con[150];
+void insidetag();
+int fileopen(char *filename);
+void clearbuf(char* b);
+void insidetag();
+
+int main(int argc, char* argv[])
+{
+    fileopen(argv[1]);
+    insidetag(); 
+    return 0;
+}
+
+
+
 int fileopen(char *filename)
 {
     if ((fpoint = fopen(filename, "r")) == NULL)
@@ -24,6 +37,7 @@ void clearbuf(char* b){
         b[i]='\0';
     }
 }
+
 void insidetag(){
     char c;
     int f = 0;
@@ -48,30 +62,36 @@ void insidetag(){
             continue;
         }
         if(f==1){
-            if( (strstr(buf,"MajorShareholders")!=NULL) ){
+            if( (strstr(buf,"MajorShareholders")!=NULL)&&(strstr(buf,"MajorShareholdersText")==NULL) ){
+                int m=0;
+                int x=0;
                 while((c=getc(fpoint))!=EOF){
                     if(c!='<'){
                         printf("%c",c);
-                    }else if(c=='<' && m!=1){
+                    }else if(c=='<'){
+                        char intag[BUFLEN];
+                        clearbuf(intag);
+                        int t=0;
                         while((c=getc(fpoint))!=EOF){
                             if(c=='>'){
                                 break;
+                            }else{
+                                intag[t++]=c;
                             }
+                        }
+                        if(strstr(intag,"/ix")!=NULL){
+                            x=1;
                         }
                     }else{
                         printf("\n\n");
                         break;
                     }
+                    if(x==1){
+                        printf("\n\n");
+                        break;
+                    }
                 }
-                
             }
         }
     }
-}
-
-int main(int argc, char* argv[])
-{
-    fileopen(argv[1]);
-    insidetag(); 
-    return 0;
 }

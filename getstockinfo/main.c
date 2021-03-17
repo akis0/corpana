@@ -1,10 +1,14 @@
+/*有報の株主一覧の部分から情報を抽出する。*/
 #include <stdio.h>
 #include<stdlib.h>
 #include <string.h>
-#define BUFLEN 1024
+#define BUFLEN 2048
+#define NAME 1
+#define ADDR 2
+#define NUMHOLD 3
+#define HOLDRATIO 4
 FILE *fpoint;
-char buf[1024];
-char con[150];
+char buf[BUFLEN];
 void insidetag();
 int fileopen(char *filename);
 void clearbuf(char* b);
@@ -39,7 +43,6 @@ void clearbuf(char* b){
         b[i]='\0';
     }
 }
-
 int to_endofthetag(char *b){
     clearbuf(b);
     int i=0;
@@ -58,6 +61,20 @@ int to_endofthetag(char *b){
     }
 }
 
+int judgewhichcontent(){
+    if((strstr(buf,"NameMajorShareholders"))!=NULL&&(strstr(buf,"MajorShareholdersMember")!=NULL)){
+        return NAME;
+    }else if((strstr(buf,"AddressMajorShareholders"))!=NULL&&(strstr(buf,"MajorShareholdersMember")!=NULL)){
+        return ADDR;
+    }else if((strstr(buf,"NumberOfSharesHeld"))!=NULL&&(strstr(buf,"MajorShareholdersMember")!=NULL)){
+        return NUMHOLD;
+    }else if((strstr(buf,"ShareholdingRatio"))!=NULL&&(strstr(buf,"MajorShareholdersMember")!=NULL)){
+        return HOLDRATIO;
+    }else{
+        return 0;
+    }
+}
+
 void insidetag(){
     char c;
     int f = 0;
@@ -71,7 +88,8 @@ void insidetag(){
             continue;
         }
         if(f==1){
-            if( (strstr(buf,"MajorShareholders")!=NULL)&&(strstr(buf,"MajorShareholdersText")==NULL) ){
+            int ju=judgewhichcontent();
+            if(ju>0){
                 int m=0;
                 int x=0;
                 while((c=getc(fpoint))!=EOF){
@@ -83,11 +101,15 @@ void insidetag(){
                             x=1;
                         }
                     }else{
-                        printf("\n\n");
+                        printf("\n");
                         break;
                     }
                     if(x==1){
-                        printf("\n\n");
+                        if(ju==4){
+                            printf("\n\n");
+                        }else{
+                            printf("\t");
+                        }
                         break;
                     }
                 }

@@ -18,6 +18,7 @@ int  to_endofthetag(char * b);
 
 int main(int argc, char* argv[])
 {
+    
     fileopen(argv[1]);
     insidetag(); 
     return 0;
@@ -94,7 +95,9 @@ void insidetag(){
                 int x=0;
                 while((c=getc(fpoint))!=EOF){
                     if(c!='<'){
+                        if(c!='\n'){
                         printf("%c",c);
+                        }
                     }else if(c=='<'){
                         to_endofthetag(buf);
                         if(strstr(buf,"/ix")!=NULL){

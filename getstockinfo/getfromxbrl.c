@@ -7,6 +7,7 @@
 #define ADDR 2
 #define NUMHOLD 3
 #define HOLDRATIO 4
+#define COMPANYNAME -1
 FILE *fpoint;
 char buf[BUFLEN];
 void insidetag();
@@ -84,6 +85,8 @@ int judgewhichcontent()
     else if ((strstr(buf, "ShareholdingRatio")) != NULL && (strstr(buf, "MajorShareholdersMember") != NULL))
     {
         return HOLDRATIO;
+    }else if((strstr(buf, "CompanyNameCoverPage")) != NULL){
+        return COMPANYNAME;
     }
     else
     {
@@ -103,7 +106,9 @@ void insidetag()
     {
         clearbuf(contents[i]);
     }
-    int hindex[5]={0,0,0,0,0};
+    int hindex[5] = {0, 0, 0, 0, 0};
+    int nameindex=0;
+    char comapnyname[SBUFLEN];
     while ((c = fgetc(fpoint)) != EOF)
     {
         int i = 0;
@@ -128,7 +133,6 @@ void insidetag()
                         if (c != '\n')
                         {
                             contents[ju][hindex[ju]++] = c;
-                            printf("%c", c);
                         }
                     }
                     else if (c == '<')
@@ -137,7 +141,27 @@ void insidetag()
                         if (strstr(buf, "/jpcrp") != NULL)
                         {
                             contents[ju][hindex[ju]++] = '\n';
-                            printf("%s","\n\n");
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (ju <0){
+                while ((c = getc(fpoint)) != EOF)
+                {
+                    if (c != '<')
+                    {
+                        if (c != '\n')
+                        {
+                            comapnyname[nameindex++] = c;
+                        }
+                    }
+                    else if (c == '<')
+                    {
+                        to_endofthetag(buf);
+                        if (strstr(buf, "/jpcrp") != NULL)
+                        {
+                            comapnyname[nameindex] = '\0';
                             break;
                         }
                     }
@@ -145,15 +169,21 @@ void insidetag()
             }
         }
     }
-    int oindex[5]={0,0,0,0,0};
-    for(int corp=0;corp<10;corp++){
-        for(int co =1;co<5;co++){
-            while(contents[co][oindex[co]]!='\n'){
-                printf("%c",contents[co][oindex[co]++]);
+
+    printf("-%s\t%s\t%s\t%s\t%s\n","被所有","所有者名","住所","所有株数","所有株式数割合");
+    int oindex[5] = {0, 0, 0, 0, 0};
+    for (int corp = 0; corp < 10; corp++)
+    {
+        printf("%s\t",comapnyname);
+        for (int co = 1; co < 5; co++)
+        {
+            while (contents[co][oindex[co]] != '\n')
+            {
+                printf("%c", contents[co][oindex[co]++]);
             }
-            printf("%s","\t");
+            printf("%s", "\t");
             oindex[co]++;
         }
-        printf("%s","\n");
+        printf("%s", "\n");
     }
 }

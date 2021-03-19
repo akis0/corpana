@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include <string.h>
 #define BUFLEN 2048
+#define SBUFLEN 512
 #define NAME 1
 #define ADDR 2
 #define NUMHOLD 3
@@ -39,7 +40,7 @@ int fileopen(char *filename)
 }
 void clearbuf(char* b){
     int i=0;
-    for(int i=0; i<BUFLEN;i++){
+    for(int i=0; i<sizeof(b)/sizeof(b[0]);i++){
         b[i]='\0';
     }
 }
@@ -79,6 +80,11 @@ void insidetag(){
     char c;
     int f = 0;
     int f0=0;
+    int m=0;
+    int x=0;
+    // char contents[5][12*SBUFLEN];
+    // int hindex[5];
+    // char cont[SBUFLEN];
     while ((c = fgetc(fpoint)) != EOF){
         int i=0;
         int f=0;
@@ -90,32 +96,27 @@ void insidetag(){
         if(f==1){
             int ju=judgewhichcontent();
             if(ju>0){
-                int m=0;
-                int x=0;
                 while((c=getc(fpoint))!=EOF){
                     if(c!='<'){
                         if(c!='\n'){
+                        //contents[ju][hindex[ju]++]=c;
                         printf("%c",c);
                         }
                     }else if(c=='<'){
                         to_endofthetag(buf);
                         if(strstr(buf,"/jpcrp")!=NULL){
-                            x=1;
-                        }
-                    }else{
-                        printf("\n");
+                        // contents[ju][hindex[ju]++]='\n';
+                        printf("\n\n");
                         break;
-                    }
-                    if(x==1){
-                        if(ju==4){
-                            printf("\n\n");
-                        }else{
-                            printf("\t");
                         }
-                        break;
                     }
                 }
             }
         }
     }
+    // for(int i=0;i<4;i++){
+    //     for(int j=0;j<4;j++){
+    //         printf("%c",contents[i][j]);
+    //     }
+    // }
 }

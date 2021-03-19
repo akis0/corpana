@@ -10,10 +10,13 @@
 #define COMPANYNAME -1
 FILE *fpoint;
 char buf[BUFLEN];
+char contents[5][12 * SBUFLEN];
+char comapnyname[SBUFLEN];
 void insidetag();
 int fileopen(char *filename);
 void clearbuf(char *b);
 void insidetag();
+int  output();
 int to_endofthetag(char *b);
 
 int main(int argc, char *argv[])
@@ -21,6 +24,7 @@ int main(int argc, char *argv[])
 
     fileopen(argv[1]);
     insidetag();
+    output();
     return 0;
 }
 
@@ -101,14 +105,13 @@ void insidetag()
     int f0 = 0;
     int m = 0;
     int x = 0;
-    char contents[5][12 * SBUFLEN];
-    for (int i = 0; i < 5; i++)
+
+    int nameindex=0;
+    int hindex[5] = {0, 0, 0, 0, 0};
+        for (int i = 0; i < 5; i++)
     {
         clearbuf(contents[i]);
     }
-    int hindex[5] = {0, 0, 0, 0, 0};
-    int nameindex=0;
-    char comapnyname[SBUFLEN];
     while ((c = fgetc(fpoint)) != EOF)
     {
         int i = 0;
@@ -169,7 +172,10 @@ void insidetag()
             }
         }
     }
+}
 
+
+int output(){
     printf("-%s\t%s\t%s\t%s\t%s\n","被所有","所有者名","住所","所有株数","所有株式数割合");
     int oindex[5] = {0, 0, 0, 0, 0};
     for (int corp = 0; corp < 10; corp++)
@@ -186,4 +192,5 @@ void insidetag()
         }
         printf("%s", "\n");
     }
+    return 0;
 }

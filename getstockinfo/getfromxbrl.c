@@ -16,7 +16,7 @@ void insidetag();
 int fileopen(char *filename);
 void clearbuf(char *b);
 void insidetag();
-int  output();
+int  output(char *filename);
 int to_endofthetag(char *b);
 
 int main(int argc, char *argv[])
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
     fileopen(argv[1]);
     insidetag();
-    output();
+    output(argv[2]);
     return 0;
 }
 
@@ -175,22 +175,38 @@ void insidetag()
 }
 
 
-int output(){
-    printf("-%s\t%s\t%s\t%s\t%s\n","被所有","所有者名","住所","所有株数","所有株式数割合");
+int output(char *filename){
+
+    FILE * ofi;
+    if ((ofi = fopen(filename, "r")) == NULL)
+    {
+        if((ofi = fopen(filename, "w")) == NULL){
+            printf("%s","fileerro");
+            return -1;
+        }
+        fprintf(ofi,"-%s\t%s\t%s\t%s\t%s\n","被所有","所有者名","住所","所有株数","所有株式数割合");
+    }
+    else
+    {
+        if((ofi = fopen(filename, "a")) == NULL){
+            printf("%s","fileerro");
+            return -1;
+        }
+    }
     int oindex[5] = {0, 0, 0, 0, 0};
     for (int corp = 0; corp < 10; corp++)
     {
-        printf("%s\t",comapnyname);
+        fprintf(ofi,"%s\t",comapnyname);
         for (int co = 1; co < 5; co++)
         {
             while (contents[co][oindex[co]] != '\n')
             {
-                printf("%c", contents[co][oindex[co]++]);
+                fprintf(ofi,"%c", contents[co][oindex[co]++]);
             }
-            printf("%s", "\t");
+            fprintf(ofi,"%s", "\t");
             oindex[co]++;
         }
-        printf("%s", "\n");
+        fprintf(ofi,"%s", "\n");
     }
     return 0;
 }

@@ -103,7 +103,7 @@ void insidetag()
     {
         clearbuf(contents[i]);
     }
-    int hindex[5];
+    int hindex[5]={0,0,0,0,0};
     while ((c = fgetc(fpoint)) != EOF)
     {
         int i = 0;
@@ -145,5 +145,15 @@ void insidetag()
             }
         }
     }
-    /*output*/
+    int oindex[5]={0,0,0,0,0};
+    for(int corp=0;corp<10;corp++){
+        for(int co =1;co<5;co++){
+            while(contents[co][oindex[co]]!='\n'){
+                printf("%c",contents[co][oindex[co]++]);
+            }
+            printf("%s","\t");
+            oindex[co]++;
+        }
+        printf("%s","\n");
+    }
 }

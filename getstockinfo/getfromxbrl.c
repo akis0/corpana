@@ -13,7 +13,7 @@ char buf[BUFLEN];
 char contents[5][12 * SBUFLEN];
 char comapnyname[SBUFLEN];
 void insidetag();
-int fileopen(char *filename);
+int fileopen(char *filename, FILE **f);
 void clearbuf(char *b);
 void insidetag();
 int  output(char *filename);
@@ -22,15 +22,15 @@ int to_endofthetag(char *b);
 int main(int argc, char *argv[])
 {
 
-    fileopen(argv[1]);
+    fileopen(argv[1],&fpoint);
     insidetag();
     output(argv[2]);
     return 0;
 }
 
-int fileopen(char *filename)
+int fileopen(char *filename, FILE **f)
 {
-    if ((fpoint = fopen(filename, "r")) == NULL)
+    if ((*f = fopen(filename, "r")) == NULL)
     {
         fprintf(stderr, "file open error");
         return -1;

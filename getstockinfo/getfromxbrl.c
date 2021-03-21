@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,6 +12,7 @@
 FILE *fpoint;
 char buf[BUFLEN];
 char contents[5][12 * SBUFLEN];
+    int count[5]={0,0,0,0,0};
 void insidetag();
 int fileopen(char *filename, FILE **f);
 void clearbuf(char *b);
@@ -88,7 +90,7 @@ int judgewhichcontent()
     else if ((strstr(buf, "ShareholdingRatio")) != NULL && (strstr(buf, "MajorShareholdersMember") != NULL))
     {
         return HOLDRATIO;
-    }else if((strstr(buf, "CompanyNameCoverPage")) != NULL){
+    }else if((strstr(buf, "CompanyNameCoverPage")) != NULL || strstr(buf, "jpsps_cor:FundNameCoverPage")){
         return COMPANYNAME;
     }
     else
@@ -131,43 +133,28 @@ void insidetag()
                 {
                     if (c != '<')
                     {
-                        if (c != '\n')
+                        if (c != '\n'&&c!='\t')
                         {
                             contents[ju][hindex[ju]++] = c;
+                            if(hindex[ju]==SBUFLEN*12-1){
+                                printf("%s","long long long");
+                                break;
+                            }
+                            
                         }
                     }
                     else if (c == '<')
                     {
                         to_endofthetag(buf);
-                        if (strstr(buf, "/jpcrp") != NULL)
+                        if (strstr(buf, "/jpcrp") != NULL||strstr(buf, "/jpsps") != NULL||strstr(buf,"/xbrl")!=NULL)
                         {
                             contents[ju][hindex[ju]++] = '\n';
+                            count[ju]++;
                             break;
                         }
                     }
                 }
             }
-            // else if (ju <0){
-            //     while ((c = getc(fpoint)) != EOF)
-            //     {
-            //         if (c != '<')
-            //         {
-            //             if (c != '\n')
-            //             {
-            //                 comapnyname[nameindex++] = c;
-            //             }
-            //         }
-            //         else if (c == '<')
-            //         {
-            //             to_endofthetag(buf);
-            //             if (strstr(buf, "/jpcrp") != NULL)
-            //             {
-            //                 comapnyname[nameindex] = '\0';
-            //                 break;
-            //             }
-            //         }
-            //     }
-            // }
         }
     }
 }
@@ -192,7 +179,7 @@ int output(char *filename){
         }
     }
     int oindex[5] = {0, 0, 0, 0, 0};
-    for (int corp = 0; corp < 10; corp++)
+    for (int corp = 0; corp < count[1]; corp++)
     {
         oindex[COMPANYNAME]=0;
         for (int co = 0; co < 5; co++)
@@ -206,5 +193,6 @@ int output(char *filename){
         }
         fprintf(ofi,"%s", "\n");
     }
+    fclose(ofi);
     return 0;
 }

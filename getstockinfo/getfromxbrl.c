@@ -136,8 +136,9 @@ void insidetag()
                         if (c != '\n'&&c!='\t')
                         {
                             contents[ju][hindex[ju]++] = c;
-                            if(hindex[ju]==SBUFLEN*12-1){
+                            if(hindex[ju]==SBUFLEN*12-2){
                                 printf("%s","long long long");
+                                fprintf(stderr,"%s","long long");
                                 break;
                             }
                             
